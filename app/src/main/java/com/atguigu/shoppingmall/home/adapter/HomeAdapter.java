@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * Created by 何健 on 2017/2/24.
@@ -53,6 +55,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     private final Context mContext;
     private final HomeBean.ResultBean datas;
+
 
     private int currentType;
     private final LayoutInflater inflater;
@@ -95,12 +98,34 @@ public class HomeAdapter extends RecyclerView.Adapter {
             case BANNER:
                 return new BannerViewHolder(inflater.inflate(R.layout.banner_viewpager, null), mContext);
             case CHANNEL:
+                return new ChannelViewHolder(inflater.inflate(R.layout.channel_item, null), mContext);
+
             case ACT:
             case SECKILL:
             case RECOMMEND:
             case HOT:
         }
         return null;
+    }
+
+    class ChannelViewHolder extends RecyclerView.ViewHolder {
+        @InjectView(R.id.gv_channel)
+        GridView gvChannel;
+        ChannerAdapter channerAdapter;
+
+        private final Context mContext;
+
+        public ChannelViewHolder(View itemView, Context mContext) {
+            super(itemView);
+            this.mContext =mContext;
+            ButterKnife.inject(this,itemView);
+        }
+
+        public void setData(List<HomeBean.ResultBean.ChannelInfoBean> channel_info) {
+            channerAdapter = new ChannerAdapter(mContext, channel_info);
+            gvChannel.setAdapter(channerAdapter);
+
+        }
     }
 
     class BannerViewHolder extends RecyclerView.ViewHolder {
@@ -110,33 +135,33 @@ public class HomeAdapter extends RecyclerView.Adapter {
         public BannerViewHolder(View itemView, Context mContext) {
             super(itemView);
             this.mContext = mContext;
-            ButterKnife.inject(BannerViewHolder.this,itemView);
+            ButterKnife.inject(BannerViewHolder.this, itemView);
             banner = (Banner) itemView.findViewById(R.id.banner);
         }
 
         public void setData(List<HomeBean.ResultBean.BannerInfoBean> banner_info) {
-           List<String> images = new ArrayList<>();
-            for(int i = 0; i <banner_info.size() ; i++) {
-                images.add(Constants.BASE_URL_IMAGE+banner_info.get(i).getImage());
+            List<String> images = new ArrayList<>();
+            for (int i = 0; i < banner_info.size(); i++) {
+                images.add(Constants.BASE_URL_IMAGE + banner_info.get(i).getImage());
             }
             //使用
             banner.setImages(images)
                     .setImageLoader(new ImageLoader() {
-                @Override
-                public void displayImage(Context context, Object path, ImageView imageView) {
-                    Glide.with(context)
-                            .load(path)
-                            .crossFade()
-                            .into(imageView);
-                }
-            }).start();
+                        @Override
+                        public void displayImage(Context context, Object path, ImageView imageView) {
+                            Glide.with(context)
+                                    .load(path)
+                                    .crossFade()
+                                    .into(imageView);
+                        }
+                    }).start();
             //设置样式
             banner.setBannerAnimation(BackgroundToForegroundTransformer.class);
             //设置banner的点击事件
             banner.setOnBannerListener(new OnBannerListener() {
                 @Override
                 public void OnBannerClick(int position) {
-                    Toast.makeText(mContext, "position=="+position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "position==" + position, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -151,6 +176,8 @@ public class HomeAdapter extends RecyclerView.Adapter {
                 bannerViewHolder.setData(datas.getBanner_info());
                 break;
             case CHANNEL:
+                ChannelViewHolder channelViewHolder = (ChannelViewHolder) holder;
+                channelViewHolder.setData(datas.getChannel_info());
                 break;
             case ACT:
                 break;
@@ -166,6 +193,6 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 1;
+        return 2;
     }
 }
