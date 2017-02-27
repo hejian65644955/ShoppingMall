@@ -5,15 +5,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.atguigu.shoppingmall.R;
 import com.atguigu.shoppingmall.bean.HomeBean;
+import com.atguigu.shoppingmall.utils.Constants;
+import com.bumptech.glide.Glide;
+import com.youth.banner.Banner;
+import com.youth.banner.listener.OnBannerListener;
+import com.youth.banner.loader.ImageLoader;
+import com.youth.banner.transformer.BackgroundToForegroundTransformer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Created by 何健 on 2017/2/24.
@@ -98,17 +105,40 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     class BannerViewHolder extends RecyclerView.ViewHolder {
         private final Context mContext;
-        @InjectView(R.id.tv_tilte)
-        TextView tvTilte;
+        private Banner banner;
 
         public BannerViewHolder(View itemView, Context mContext) {
             super(itemView);
             this.mContext = mContext;
             ButterKnife.inject(BannerViewHolder.this,itemView);
+            banner = (Banner) itemView.findViewById(R.id.banner);
         }
 
-        public void setData(List<HomeBean.ResultBean.ActInfoBean> act_info) {
-            tvTilte.setText("我是banner!!!");
+        public void setData(List<HomeBean.ResultBean.BannerInfoBean> banner_info) {
+           List<String> images = new ArrayList<>();
+            for(int i = 0; i <banner_info.size() ; i++) {
+                images.add(Constants.BASE_URL_IMAGE+banner_info.get(i).getImage());
+            }
+            //使用
+            banner.setImages(images)
+                    .setImageLoader(new ImageLoader() {
+                @Override
+                public void displayImage(Context context, Object path, ImageView imageView) {
+                    Glide.with(context)
+                            .load(path)
+                            .crossFade()
+                            .into(imageView);
+                }
+            }).start();
+            //设置样式
+            banner.setBannerAnimation(BackgroundToForegroundTransformer.class);
+            //设置banner的点击事件
+            banner.setOnBannerListener(new OnBannerListener() {
+                @Override
+                public void OnBannerClick(int position) {
+                    Toast.makeText(mContext, "position=="+position, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -118,7 +148,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
         switch (getItemViewType(position)) {
             case BANNER:
                 BannerViewHolder bannerViewHolder = (BannerViewHolder) holder;
-                bannerViewHolder.setData(datas.getAct_info());
+                bannerViewHolder.setData(datas.getBanner_info());
                 break;
             case CHANNEL:
                 break;
