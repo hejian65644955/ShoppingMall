@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_button"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.atguigu.shoppingmall.Button.ButtonActivity">
+
+    <Button
+        android:id="@+id/btn_f1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="fragment切换"/>
+
+    <Button
+        android:id="@+id/btn_f2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="联网请求"/>
+    <Button
+        android:id="@+id/btn_f3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="数据解析"/>
+    <Button
+        android:id="@+id/btn_f4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="分类型RecycleView"/>
+
+</LinearLayout>
