@@ -82,7 +82,6 @@ public class HomeFragment extends BaseFragment {
         rvHome.setAdapter(homeAdapter);
         //设置布局管理器
         rvHome.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false));
-
     }
 
 

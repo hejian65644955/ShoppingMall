@@ -1,10 +1,12 @@
 package com.atguigu.shoppingmall.home.adapter;
 
 import android.content.Context;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import com.youth.banner.Banner;
 import com.youth.banner.listener.OnBannerListener;
 import com.youth.banner.loader.ImageLoader;
 import com.youth.banner.transformer.BackgroundToForegroundTransformer;
+import com.zhy.magicviewpager.transformer.RotateYTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +60,10 @@ public class HomeAdapter extends RecyclerView.Adapter {
     private final HomeBean.ResultBean datas;
 
 
+
     private int currentType;
     private final LayoutInflater inflater;
+
 
     public HomeAdapter(Context context, HomeBean.ResultBean result) {
         this.mContext = context;
@@ -99,13 +104,57 @@ public class HomeAdapter extends RecyclerView.Adapter {
                 return new BannerViewHolder(inflater.inflate(R.layout.banner_viewpager, null), mContext);
             case CHANNEL:
                 return new ChannelViewHolder(inflater.inflate(R.layout.channel_item, null), mContext);
-
             case ACT:
+                return new ActViewHolder(inflater.inflate(R.layout.act_item, null), mContext);
             case SECKILL:
+                //return new SeckillHolder(inflater.inflate(R.layout.seckill_item,null),mContext);
             case RECOMMEND:
             case HOT:
         }
         return null;
+    }
+
+    class SeckillHolder extends RecyclerView.ViewHolder{
+
+        public SeckillHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    class ActViewHolder extends RecyclerView.ViewHolder {
+
+        private final Context mContext;
+        @InjectView(R.id.act_viewpager)
+        ViewPager actViewpager;
+        private ViewPagerAdapter adapter;
+
+        public ActViewHolder(View itemView, Context mContext) {
+            super(itemView);
+            this.mContext = mContext;
+            ButterKnife.inject(this,itemView);
+        }
+
+        public void setData(List<HomeBean.ResultBean.ActInfoBean> act_info) {
+            //设置ViewPager适配器
+            adapter = new ViewPagerAdapter(mContext, act_info);
+
+            //美化ViewPager库
+            actViewpager.setPageMargin(20);//设置page间间距，自行根据需求设置
+            actViewpager.setOffscreenPageLimit(3);//>=3
+            actViewpager.setAdapter(adapter);
+//setPageTransformer 决定动画效果
+            actViewpager.setPageTransformer(true, new
+                    RotateYTransformer());
+            //设置点击事件
+            adapter.setOnItemClickListener(new ViewPagerAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClickListener(View v, int position) {
+                    Toast.makeText(mContext, "position=="+position, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        }
     }
 
     class ChannelViewHolder extends RecyclerView.ViewHolder {
@@ -117,13 +166,20 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
         public ChannelViewHolder(View itemView, Context mContext) {
             super(itemView);
-            this.mContext =mContext;
-            ButterKnife.inject(this,itemView);
+            this.mContext = mContext;
+            ButterKnife.inject(this, itemView);
         }
 
         public void setData(List<HomeBean.ResultBean.ChannelInfoBean> channel_info) {
             channerAdapter = new ChannerAdapter(mContext, channel_info);
             gvChannel.setAdapter(channerAdapter);
+
+            gvChannel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Toast.makeText(mContext, "position==" + position, Toast.LENGTH_SHORT).show();
+                }
+            });
 
         }
     }
@@ -180,6 +236,8 @@ public class HomeAdapter extends RecyclerView.Adapter {
                 channelViewHolder.setData(datas.getChannel_info());
                 break;
             case ACT:
+                ActViewHolder actViewHolder = (ActViewHolder) holder;
+                actViewHolder.setData(datas.getAct_info());
                 break;
             case SECKILL:
                 break;
@@ -193,6 +251,6 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }
