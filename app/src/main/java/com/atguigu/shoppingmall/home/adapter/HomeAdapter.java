@@ -2,6 +2,7 @@ package com.atguigu.shoppingmall.home.adapter;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.atguigu.shoppingmall.R;
@@ -26,6 +28,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import cn.iwgang.countdownview.CountdownView;
 
 /**
  * Created by 何健 on 2017/2/24.
@@ -107,17 +110,37 @@ public class HomeAdapter extends RecyclerView.Adapter {
             case ACT:
                 return new ActViewHolder(inflater.inflate(R.layout.act_item, null), mContext);
             case SECKILL:
-                //return new SeckillHolder(inflater.inflate(R.layout.seckill_item,null),mContext);
+                return new SeckillHolder(inflater.inflate(R.layout.seckill_item, null), mContext);
             case RECOMMEND:
             case HOT:
         }
         return null;
     }
 
-    class SeckillHolder extends RecyclerView.ViewHolder{
+    class SeckillHolder extends RecyclerView.ViewHolder {
+        @InjectView(R.id.countdownview)
+        CountdownView countdownview;
+        @InjectView(R.id.tv_more_seckill)
+        TextView tvMoreSeckill;
+        @InjectView(R.id.rv_seckill)
+        RecyclerView rvSeckill;
+        RecyclerViewSeckillAdapter adapter;
 
-        public SeckillHolder(View itemView) {
+        public SeckillHolder(View itemView, Context mContext) {
             super(itemView);
+            ButterKnife.inject(this,itemView);
+        }
+
+        public void setData(HomeBean.ResultBean.SeckillInfoBean seckill_info) {
+            adapter = new RecyclerViewSeckillAdapter(mContext, seckill_info);
+            rvSeckill.setAdapter(adapter);
+            rvSeckill.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.HORIZONTAL,false));
+            adapter.setOnItemClickListener(new RecyclerViewSeckillAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View v, int position) {
+                    Toast.makeText(mContext, "position=="+position, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -131,7 +154,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
         public ActViewHolder(View itemView, Context mContext) {
             super(itemView);
             this.mContext = mContext;
-            ButterKnife.inject(this,itemView);
+            ButterKnife.inject(this, itemView);
         }
 
         public void setData(List<HomeBean.ResultBean.ActInfoBean> act_info) {
@@ -149,7 +172,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
             adapter.setOnItemClickListener(new ViewPagerAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClickListener(View v, int position) {
-                    Toast.makeText(mContext, "position=="+position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "position==" + position, Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -240,6 +263,8 @@ public class HomeAdapter extends RecyclerView.Adapter {
                 actViewHolder.setData(datas.getAct_info());
                 break;
             case SECKILL:
+                SeckillHolder seckillHolder = (SeckillHolder) holder;
+                seckillHolder.setData(datas.getSeckill_info());
                 break;
             case RECOMMEND:
                 break;
@@ -251,6 +276,6 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 4;
     }
 }
